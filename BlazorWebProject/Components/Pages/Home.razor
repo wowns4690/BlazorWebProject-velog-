@@ -1,46 +1,31 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@using BlazorWebProject.Service
+@using BlazorWebProject.Model
+@inject EmployeeService service
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<ul>
+    @foreach(var item in items)
+    {
+        <li>@item.Id</li>
+        <li>@item.Name</li>
+        <li>@item.birthdate</li>
+        <li>@item.gender</li>
+        <li>@item.departmentId</li>
+    }
+</ul>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
 @code{
+    List<EmployeeModel> items = new();
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("2");
-        await base.OnInitializedAsync();
+        items = await service.GetEmployeeList();
     }
 
-    public override async Task SetParametersAsync(ParameterView parameters)
-    {
-        Console.WriteLine("1");
-        await base.SetParametersAsync(parameters);
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        Console.WriteLine("3");
-        await base.OnParametersSetAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Console.WriteLine($"OnAfterRenderAsync First : {firstRender}");
-        }
-        else
-        {
-            Console.WriteLine($"OnAfterRenderAsync Not First : {firstRender}");
-        }
-    }
-
-    private void IncrementCount()
-    {
-        Console.WriteLine("클릭 이벤트");
-    }
 }

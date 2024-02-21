@@ -1,10 +1,14 @@
 using BlazorWebProject.Components;
+using BlazorWebProject.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSingleton<CosmosService>();
+builder.Services.AddScoped<EmployeeService>();
 
 var app = builder.Build();
 
