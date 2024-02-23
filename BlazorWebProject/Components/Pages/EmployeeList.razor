@@ -1,0 +1,44 @@
+﻿@page "/EmployeeList"
+@using BlazorWebProject.Model
+@using BlazorWebProject.Service
+@inject ClientService service
+@if( employeeList == null)
+{
+    
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>이름</th>
+                    <th>부서</th>
+                    <th>성별</th>
+                    <th>생년월일</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (EmployeeModel employee in employeeList)
+                {
+                    <tr>
+                        <td>@employee.Name</td>
+                        <td>@employee.DepartmentName</td>
+                        <td>@employee.Gender</td>
+                        <td>@employee.BirthDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    public List<EmployeeModel> employeeList { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        employeeList = await service.GetEmployeeList();
+    }
+}

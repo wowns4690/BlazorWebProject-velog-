@@ -7,5 +7,6 @@
         public string BirthDate { get; set; } = string.Empty;
         public string Gender { get; set; } = string.Empty;
         public string DepartmentId { get; set; } = string.Empty;
+        public string DepartmentName { get; set; } = string.Empty;
     }
 }

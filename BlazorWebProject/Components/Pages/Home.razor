@@ -2,30 +2,18 @@
 @rendermode InteractiveServer
 @using BlazorWebProject.Service
 @using BlazorWebProject.Model
-@inject EmployeeService service
+@inject ClientService service
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
-<ul>
-    @foreach(var item in items)
-    {
-        <li>@item.Id</li>
-        <li>@item.Name</li>
-        <li>@item.BirthDate</li>
-        <li>@item.Gender</li>
-        <li>@item.DepartmentId</li>
-    }
-</ul>
+
+<div class="mt-4">
+    <EmployeeList />
+</div>
 
 
-@code{
-    List<EmployeeModel> items = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        items = await service.GetEmployeeList();
-    }
+@code {
 
 }
