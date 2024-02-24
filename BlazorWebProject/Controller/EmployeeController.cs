@@ -1,6 +1,7 @@
 ﻿using BlazorWebProject.Model;
 using BlazorWebProject.Service;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BlazorWebProject.Controller
 {
@@ -19,13 +20,43 @@ namespace BlazorWebProject.Controller
         [Route("employeeList")]
         public async Task<ActionResult<List<EmployeeModel>>> GetEmployeeList()
         {
-
             var employeeList = await employeeService.EmployeeDepartmentMapper();
             if(employeeList.Count == 0)
             {
-                return NoContent();
+                return StatusCode(204); 
             }
             return Ok(employeeList);
+        }
+
+        //부서 목록 Method
+        [HttpGet]
+        [Route("departmentList")]
+        public async Task<ActionResult<List<DepartmentModel>>> GetDepartmentList()
+        {
+            var departmentList = await employeeService.GetDepartmentList();
+            if (departmentList.Count == 0)
+            {
+                return Ok(new List<EmployeeModel>());
+            }
+            return Ok(departmentList);
+        }
+
+        //직원 추가 Method
+        [HttpPost]
+        [Route("employeeAdd")]
+        public async Task<ActionResult> EmployeeAdd([FromBody]EmployeeModel emp)
+        {
+            await employeeService.EmployeeAdd(emp);
+            return Created();
+        }
+
+        //직원 삭제 Method
+        [HttpPost]
+        [Route("employeeDelete")]
+        public async Task<ActionResult> EmployeeDelete([FromBody]EmployeeModel emp)
+        {
+            await employeeService.EmployeeDelete(emp);
+            return NoContent();
         }
     }
 }

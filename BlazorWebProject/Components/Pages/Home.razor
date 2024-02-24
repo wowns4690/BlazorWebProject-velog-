@@ -2,18 +2,26 @@
 @rendermode InteractiveServer
 @using BlazorWebProject.Service
 @using BlazorWebProject.Model
+@using BlazorWebProject.Components
 @inject ClientService service
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<div class="mt-4">
+    <EmployeeAdd OnEmployeeAdded="HandleEmployeeAdded" />
+</div>
 
 <div class="mt-4">
-    <EmployeeList />
+    <EmployeeList @ref="employeeList" />
 </div>
 
 
 @code {
+
+    private EmployeeList employeeList = null!;
+
+    private async Task HandleEmployeeAdded(EmployeeModel emp)
+    {
+        await employeeList.EmployeeListUpdate(emp);
+    }
 
 }

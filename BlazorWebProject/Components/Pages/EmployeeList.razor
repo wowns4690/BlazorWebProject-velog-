@@ -16,7 +16,7 @@ else
                     <th>부서</th>
                     <th>성별</th>
                     <th>생년월일</th>
-                    <th></th>
+                    <th>직원삭제</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,6 +27,7 @@ else
                         <td>@employee.DepartmentName</td>
                         <td>@employee.Gender</td>
                         <td>@employee.BirthDate</td>
+                        <td><button class="btn btn-danger" @onclick="async() => await EmployeeDelete(employee)">직원 삭제</button></td>
                     </tr>
                 }
             </tbody>
@@ -36,9 +37,35 @@ else
 
 @code {
     public List<EmployeeModel> employeeList { get; set; } = null!;
-
+    public List<DepartmentModel> departmentList { get; set; } = null!;
     protected override async Task OnInitializedAsync()
     {
+        await GetEmployeeList();
+    }
+
+    public async Task EmployeeDelete(EmployeeModel emp)
+    {
+        await service.EmployeeDelete(emp);
+        employeeList.RemoveAll(x => x.id == emp.id);
+    }
+
+    public async Task GetEmployeeList()
+    {
         employeeList = await service.GetEmployeeList();
+    }
+
+    public async Task EmployeeListUpdate(EmployeeModel AddData)
+    {
+        var departmentname = await DepartmentMapping(AddData);
+        AddData.DepartmentName = departmentname.name;
+        employeeList.Add(AddData);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task<DepartmentModel> DepartmentMapping(EmployeeModel employee)
+    {
+        departmentList = await service.GetDepartmentList();
+        var department = departmentList.FirstOrDefault(x => x.DepartmentId == employee.DepartmentId);
+        return department ?? new();
     }
 }

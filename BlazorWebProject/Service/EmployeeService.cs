@@ -46,11 +46,10 @@ namespace BlazorWebProject.Service
         }
 
         //직원 목록 부서id를 참조하여 부서명을 불러오는 Method
-        public async Task<List<EmployeeModel>> EmployeeDepartmentMapper() 
+        public async Task<List<EmployeeModel>> EmployeeDepartmentMapper()
         {
             var employees = await GetEmployeeList();
             var departments = await GetDepartmentList();
-
             var mappedEmployees = employees.Select(e =>
             {
                 var matchingDepartment = departments.FirstOrDefault(d => d.DepartmentId == e.DepartmentId);
@@ -60,10 +59,48 @@ namespace BlazorWebProject.Service
                 }
                 return e;
             });
+            return mappedEmployees.OrderBy(employee => employee.EmployeeId).ToList();
+        }
 
+        //직원 id값중 가장 큰 값을 찾아오는 Method
+        public async Task<int> EmployeeFindIdMax()
+        {
+            var container = cosmosService.GetContainer("Employee");
+            var query = "SELECT TOP 1 * FROM c ORDER BY c.EmployeeId DESC";
+            var iterator = container.GetItemQueryIterator<EmployeeModel>(query);
+            var emp = new EmployeeModel();
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                var employees = response.ToList();
+                if (employees.Any())
+                {
+                    emp = employees.First();
+                }
+                else
+                {
+                    emp.EmployeeId = "0";
+                }
+            }
 
-            return mappedEmployees.OrderBy(employee => employee.Id).ToList();
+            return int.Parse(emp.EmployeeId);
+        }
 
+        //직원을 추가하는 Method
+        public async Task EmployeeAdd(EmployeeModel emp)
+        {
+            int maxId = await EmployeeFindIdMax();
+            maxId++;
+            emp.EmployeeId = maxId.ToString();
+            var container = cosmosService.GetContainer("Employee");
+            await container.CreateItemAsync(emp);
+        }
+
+        //직원을 삭제하는 Method
+        public async Task EmployeeDelete(EmployeeModel emp)
+        {
+            var container = cosmosService.GetContainer("Employee");
+            await container.DeleteItemAsync<EmployeeModel>(emp.id, new PartitionKey(emp.DepartmentId));
         }
     }
 }
