@@ -23,7 +23,7 @@ namespace BlazorWebProject.Controller
             var employeeList = await employeeService.EmployeeDepartmentMapper();
             if(employeeList.Count == 0)
             {
-                return StatusCode(204); 
+                return NoContent(); 
             }
             return Ok(employeeList);
         }
@@ -56,6 +56,24 @@ namespace BlazorWebProject.Controller
         public async Task<ActionResult> EmployeeDelete([FromBody]EmployeeModel emp)
         {
             await employeeService.EmployeeDelete(emp);
+            return NoContent();
+        }
+
+        //특정 직원을 조회하는 Method
+        [HttpPost]
+        [Route("employeeById")]
+        public async Task<ActionResult<EmployeeModel>> GetEmployeeById([FromBody]EmployeeModel emp)
+        {
+            var response = await employeeService.GetEmployeeById(emp);
+            return Ok(response);
+        }
+
+        //직원 정보를 업데이트 하는 Method
+        [HttpPost]
+        [Route("employeeUpdate")]
+        public async Task<ActionResult> EmployeeUpdate([FromBody]EmployeeModel emp)
+        {
+            await employeeService.EmployeeUpdate(emp);
             return NoContent();
         }
     }

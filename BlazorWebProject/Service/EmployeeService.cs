@@ -1,6 +1,7 @@
 ﻿using BlazorWebProject.Model;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Azure.Cosmos;
+using System.Net;
 
 namespace BlazorWebProject.Service
 {
@@ -100,7 +101,23 @@ namespace BlazorWebProject.Service
         public async Task EmployeeDelete(EmployeeModel emp)
         {
             var container = cosmosService.GetContainer("Employee");
-            await container.DeleteItemAsync<EmployeeModel>(emp.id, new PartitionKey(emp.DepartmentId));
+            await container.DeleteItemAsync<EmployeeModel>(emp.id, new PartitionKey(emp.pk));
         }
+
+        //특정 직원을 조회하는 Method
+        public async Task<EmployeeModel> GetEmployeeById(EmployeeModel emp)
+        {
+            var container = cosmosService.GetContainer("Employee");
+            var response = await container.ReadItemAsync<EmployeeModel>(emp.id, new PartitionKey(emp.pk));
+            return response.Resource;
+        }
+
+        //직원을 수정하는 Method
+        public async Task EmployeeUpdate(EmployeeModel emp)
+        {
+            var container = cosmosService.GetContainer("Employee");
+            await container.UpsertItemAsync<EmployeeModel>(emp);
+        }
+
     }
 }

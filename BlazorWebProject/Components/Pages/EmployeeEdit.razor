@@ -1,7 +1,8 @@
-﻿@page "/EmployeeAdd"
+﻿@page "/EmployeeEdit/{id}/{pk}"
 @using BlazorWebProject.Model
 @using BlazorWebProject.Service
 @inject ClientService service
+@inject NavigationManager NavManager
 
 <div class="form-group">
     <input type="text" class="form-control form-control-user" @bind-value="emp.Name" placeholder="이름을 입력해주세요." maxlength="12">
@@ -27,25 +28,38 @@
 <div class="form-group">
     <input type="date" class="form-control form-control-user" @bind="empBirthDate">
 </div>
-<button class="btn btn-primary" @onclick="@(async () => await AddEmployee())">직원추가</button>
+<button class="btn btn-primary" @onclick="@(async () => await EditEmployee())">직원수정</button>
 <div class="mt-4">
 </div>
 
 @code {
-
     [Parameter]
-    public EventCallback<EmployeeModel> OnEmployeeAdded { get; set; }
+    public string id { get; set; } = null!;
+    [Parameter]
+    public string pk { get; set; } = null!;
 
-    private EmployeeModel emp = new EmployeeModel();
+    private EmployeeModel emp = new();
 
-    private DateTime empBirthDate = DateTime.Today;
+    private DateTime empBirthDate = new();
 
-    private async Task AddEmployee()
+    protected override async Task OnInitializedAsync()
     {
-        emp.id = Guid.NewGuid().ToString();
-        emp.pk = Guid.NewGuid().ToString();
-        emp.BirthDate = empBirthDate.ToString("yyyy-MM-dd");
-        await service.EmployeeAdd(emp);
-        await OnEmployeeAdded.InvokeAsync(emp);
+        await GetEmployeeById();
     }
+
+    private async Task GetEmployeeById()
+    {
+        emp.id = id;
+        emp.pk = pk;
+        emp = await service.GetEmployeeById(emp);
+        empBirthDate = DateTime.Parse(emp.BirthDate);
+    }
+
+    private async Task EditEmployee()
+    {
+        emp.BirthDate = empBirthDate.ToString("yyyy-MM-dd");
+        await service.EmployeeUpdate(emp);
+        NavManager.NavigateTo("/");
+    }
+
 }

@@ -43,7 +43,6 @@ namespace BlazorWebProject.Service
         {
             string baseUrl = "api/Employee/departmentList";
             var response = await httpClient.GetFromJsonAsync<List<DepartmentModel>>(baseUrl);
-            Console.WriteLine(response);
             return response ?? new();
         }
 
@@ -58,6 +57,27 @@ namespace BlazorWebProject.Service
         public async Task EmployeeDelete(EmployeeModel emp)
         {
             string baseUrl = "api/Employee/employeeDelete";
+            await httpClient.PostAsJsonAsync(baseUrl, emp);
+        }
+
+        //특정 직원을 조회하는 Method
+        public async Task<EmployeeModel> GetEmployeeById(EmployeeModel emp)
+        {
+            string baseUrl = "api/Employee/employeeById";
+            var response = await httpClient.PostAsJsonAsync<EmployeeModel>(baseUrl, emp);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var option = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            var employee = JsonSerializer.Deserialize<EmployeeModel>(responseContent,option);
+            return employee ?? new();
+        }
+
+        //직원 정보를 수정하는 Method
+        public async Task EmployeeUpdate(EmployeeModel emp)
+        {
+            string baseUrl = "api/Employee/employeeUpdate";
             await httpClient.PostAsJsonAsync(baseUrl, emp);
         }
     }

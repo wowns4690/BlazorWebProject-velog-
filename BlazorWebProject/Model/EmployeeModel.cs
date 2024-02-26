@@ -9,5 +9,6 @@
         public string DepartmentId { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
         public string id { get; set; } = string.Empty;
+        public string pk { get; set; } = string.Empty;
     }
 }

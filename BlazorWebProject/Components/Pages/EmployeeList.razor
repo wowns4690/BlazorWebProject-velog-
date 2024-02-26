@@ -16,6 +16,7 @@ else
                     <th>부서</th>
                     <th>성별</th>
                     <th>생년월일</th>
+                    <th>직원수정</th>
                     <th>직원삭제</th>
                 </tr>
             </thead>
@@ -27,6 +28,7 @@ else
                         <td>@employee.DepartmentName</td>
                         <td>@employee.Gender</td>
                         <td>@employee.BirthDate</td>
+                        <td><a href=@($"EmployeeEdit/{employee.id}/{employee.pk}") class="btn btn-primary"><span class="oi oi-pencil" />정보수정 </a></td>
                         <td><button class="btn btn-danger" @onclick="async() => await EmployeeDelete(employee)">직원 삭제</button></td>
                     </tr>
                 }
@@ -36,6 +38,7 @@ else
 }
 
 @code {
+
     public List<EmployeeModel> employeeList { get; set; } = null!;
     public List<DepartmentModel> departmentList { get; set; } = null!;
     protected override async Task OnInitializedAsync()
@@ -68,4 +71,6 @@ else
         var department = departmentList.FirstOrDefault(x => x.DepartmentId == employee.DepartmentId);
         return department ?? new();
     }
+
+
 }

@@ -15,6 +15,7 @@ builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<EmployeeModel>();
 builder.Services.AddScoped<EmployeeController>();
 builder.Services.AddScoped<ClientService>();
+builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 HttpClient BaseAddressConfigure(IServiceProvider services)
 {
     var httpClient = new HttpClient();
