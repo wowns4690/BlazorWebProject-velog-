@@ -1,21 +1,8 @@
-﻿@page "/EmployeeAdd"
+﻿@page "/Register"
 @using BlazorWebProject.Model
 @using BlazorWebProject.Service
 @inject ClientService service
-@inject IJSRuntime JsRuntime
 
-<div class="form-group">
-    <input type="text" class="form-control form-control-user" @bind-value="emp.RegisterId" placeholder="아이디를 입력해주세요." maxlength="12">
-</div>
-<hr />
-<div class="form-group">
-    <input type="password" class="form-control form-control-user" @bind-value="emp.Password" placeholder="비밀번호를 입력해주세요." maxlength="12">
-</div>
-<hr />
-<div class="form-group">
-    <input type="password" class="form-control form-control-user" @bind-value="ConfirmPassword" placeholder="비밀번호를 확인해주세요." maxlength="12">
-</div>
-<hr />
 <div class="form-group">
     <input type="text" class="form-control form-control-user" @bind-value="emp.Name" placeholder="이름을 입력해주세요." maxlength="12">
 </div>
@@ -40,8 +27,7 @@
 <div class="form-group">
     <input type="date" class="form-control form-control-user" @bind="empBirthDate">
 </div>
-<hr />
-<button class="btn btn-primary" @onclick="@(async () => await PasswordCheck())">회원가입</button>
+<button class="btn btn-primary" @onclick="@(async () => await AddEmployee())">직원추가</button>
 <div class="mt-4">
 </div>
 
@@ -54,8 +40,6 @@
 
     private DateTime empBirthDate = DateTime.Today;
 
-    private string ConfirmPassword = "";
-
     private async Task AddEmployee()
     {
         emp.id = Guid.NewGuid().ToString();
@@ -63,17 +47,5 @@
         emp.BirthDate = empBirthDate.ToString("yyyy-MM-dd");
         await service.EmployeeAdd(emp);
         await OnEmployeeAdded.InvokeAsync(emp);
-    }
-
-    private async Task PasswordCheck()
-    {
-        if(ConfirmPassword == emp.Password)
-        {
-            await AddEmployee();
-        }
-        else
-        {
-            await JsRuntime.InvokeVoidAsync("alert", "비밀번호를 확인해 주세요.");
-        }
     }
 }

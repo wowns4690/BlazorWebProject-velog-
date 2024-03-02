@@ -2,7 +2,6 @@
 using BlazorWebProject.Model;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Xml.Linq;
 
@@ -29,11 +28,7 @@ namespace BlazorWebProject.Service
             }
             else
             {
-                var option = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
-                List<EmployeeModel> employeeList = JsonSerializer.Deserialize<List<EmployeeModel>>(response, option) ?? new();
+                List<EmployeeModel> employeeList = JsonSerializer.Deserialize<List<EmployeeModel>>(response) ?? new();
                 return employeeList ?? new();
             }
         }
@@ -66,11 +61,7 @@ namespace BlazorWebProject.Service
             string baseUrl = "api/Employee/employeeById";
             var response = await httpClient.PostAsJsonAsync<EmployeeModel>(baseUrl, emp);
             var responseContent = await response.Content.ReadAsStringAsync();
-            var option = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-            var employee = JsonSerializer.Deserialize<EmployeeModel>(responseContent,option);
+            var employee = JsonSerializer.Deserialize<EmployeeModel>(responseContent);
             return employee ?? new();
         }
 
@@ -80,5 +71,6 @@ namespace BlazorWebProject.Service
             string baseUrl = "api/Employee/employeeUpdate";
             await httpClient.PostAsJsonAsync(baseUrl, emp);
         }
+
     }
 }

@@ -4,17 +4,29 @@
 @using BlazorWebProject.Model
 @using BlazorWebProject.Components
 @inject ClientService service
+@inject IJSRuntime JsRuntime
 <PageTitle>Home</PageTitle>
 
-<div class="mt-4">
-    <EmployeeAdd OnEmployeeAdded="HandleEmployeeAdded" />
-</div>
+@if (!string.IsNullOrEmpty(Token))
+{
+    <p>@Token</p>
+    <div class="mt-4">
+        <EmployeeAdd OnEmployeeAdded="HandleEmployeeAdded" />
+    </div>
 
-<div class="mt-4">
-    <EmployeeList @ref="employeeList" />
-</div>
+    <div class="mt-4">
+        <EmployeeList @ref="employeeList" />
+    </div>
+}
+else
+{
+    <div class="mt-4">
+        <EmployeeLogin />
+    </div>
+}
 
 @code {
+    private string Token = string.Empty;
 
     private EmployeeList employeeList = null!;
 
@@ -22,5 +34,4 @@
     {
         await employeeList.EmployeeListUpdate(emp);
     }
-
 }

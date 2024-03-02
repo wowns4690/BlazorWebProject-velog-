@@ -1,5 +1,14 @@
-﻿using BlazorWebProject.Model;
+﻿
+
+
+
+
+
+
+
+using BlazorWebProject.Model;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Azure.Cosmos;
 using System.Net;
 
@@ -8,10 +17,12 @@ namespace BlazorWebProject.Service
     public class EmployeeService
     {
         private CosmosService cosmosService;
+        private JwtService jwtService;
 
-        public EmployeeService(CosmosService cosmosService)
+        public EmployeeService(CosmosService cosmosService, JwtService jwtService)
         {
             this.cosmosService = cosmosService;
+            this.jwtService = jwtService;
         }
 
         //직원 목록을 불러오는 Method
@@ -27,6 +38,7 @@ namespace BlazorWebProject.Service
                 var response = await iterator.ReadNextAsync();
                 result.AddRange(response.ToList());
             }
+
             return result;
         }
 
@@ -117,6 +129,26 @@ namespace BlazorWebProject.Service
         {
             var container = cosmosService.GetContainer("Employee");
             await container.UpsertItemAsync<EmployeeModel>(emp);
+        }
+
+        //직원 로그인시 아이디와 패스워드 확인 Method
+        public async Task<string> Login(EmployeeModel emp)
+        {
+            var container = cosmosService.GetContainer("Employee");
+            var query = $"SELECT * FROM C WHERE C.RegisterId = '{emp.RegisterId}'";
+            QueryDefinition queryDefinition = new QueryDefinition(query);
+            FeedIterator<EmployeeModel> resultSetIterator = container.GetItemQueryIterator<EmployeeModel>(queryDefinition);
+            var response = await resultSetIterator.ReadNextAsync();
+            var DbEmployee = response.Resource.FirstOrDefault<EmployeeModel>();
+            if (DbEmployee != null)
+            {
+                if (DbEmployee.Password == emp.Password)
+                {
+                    var token = await jwtService.GenerateJwtTokenAsync(emp.RegisterId);
+                    return token;
+                }
+            }
+            return "";
         }
 
     }

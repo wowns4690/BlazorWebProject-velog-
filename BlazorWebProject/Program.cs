@@ -2,6 +2,7 @@ using BlazorWebProject.Components;
 using BlazorWebProject.Service;
 using BlazorWebProject.Model;
 using BlazorWebProject.Controller;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +11,16 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<EmployeeModel>();
+builder.Services.AddScoped<DepartmentModel>();
 builder.Services.AddSingleton<CosmosService>();
 builder.Services.AddScoped<EmployeeService>();
-builder.Services.AddScoped<EmployeeModel>();
-builder.Services.AddScoped<EmployeeController>();
 builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<AuthController>();
+builder.Services.AddScoped<EmployeeController>();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 HttpClient BaseAddressConfigure(IServiceProvider services)
 {
