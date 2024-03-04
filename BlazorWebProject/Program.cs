@@ -3,6 +3,7 @@ using BlazorWebProject.Service;
 using BlazorWebProject.Model;
 using BlazorWebProject.Controller;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,15 +11,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.Cookie.Name = "auth";
+    options.LoginPath= "/";
+    options.AccessDeniedPath = "/";
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
+});
+
 builder.Services.AddControllers();
 builder.Services.AddScoped<EmployeeModel>();
 builder.Services.AddScoped<DepartmentModel>();
+builder.Services.AddScoped<EmployeeLoginModel>();
 builder.Services.AddSingleton<CosmosService>();
 builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<ClientService>();
-builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthController>();
 builder.Services.AddScoped<EmployeeController>();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
@@ -44,6 +56,9 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

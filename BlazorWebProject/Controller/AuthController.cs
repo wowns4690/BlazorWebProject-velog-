@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using BlazorWebProject.Model;
 using BlazorWebProject.Service;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace BlazorWebProject.Controller
 {
@@ -17,29 +19,52 @@ namespace BlazorWebProject.Controller
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly Service.EmployeeService _employeeService;
-        private readonly Service.JwtService _jwtService;
+        private readonly EmployeeService _employeeService;
 
-        public AuthController(IConfiguration configuration, EmployeeService employeeService, JwtService jwtService)
+
+        public AuthController(IConfiguration configuration, EmployeeService employeeService)
         {
             _configuration = configuration;
             _employeeService = employeeService;
-            _jwtService = jwtService;
         }
 
         //로그인 Method
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login([FromBody] EmployeeModel emp)
+        public async Task<ActionResult<string>> SignInAsync([FromBody] EmployeeLoginModel emp)
         {
-            var token = await _employeeService.Login(emp);
-            if (token.IsNullOrEmpty())
+            var cosmosEmployee = await _employeeService.Login(emp);
+
+            if (cosmosEmployee is null)
             {
-                return Unauthorized();
+                return Forbid();
             }
-            else
+
+            var claims = new List<Claim>
             {
-                return Ok(token);
-            }
+                new Claim(ClaimTypes.NameIdentifier, emp.Id),
+                new Claim(ClaimTypes.Name, cosmosEmployee.Name),
+                new Claim(ClaimTypes.Gender, cosmosEmployee.Gender),
+                new Claim(ClaimTypes.Role, cosmosEmployee.DepartmentId)
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), new AuthenticationProperties
+            {
+                IsPersistent = false,
+                
+            });
+
+            return Ok("success");
+        }
+
+
+
+        [HttpPost("logout")]
+        public async void SignOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
     }
 }

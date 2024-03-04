@@ -7,9 +7,7 @@
 @inject IJSRuntime JsRuntime
 <PageTitle>Home</PageTitle>
 
-@if (!string.IsNullOrEmpty(Token))
-{
-    <p>@Token</p>
+@if(IsLoggedIn){
     <div class="mt-4">
         <EmployeeAdd OnEmployeeAdded="HandleEmployeeAdded" />
     </div>
@@ -18,15 +16,14 @@
         <EmployeeList @ref="employeeList" />
     </div>
 }
-else
-{
+else{
     <div class="mt-4">
-        <EmployeeLogin />
+    <EmployeeLogin IsLoggedIn="LoggedIn" />
     </div>
 }
 
 @code {
-    private string Token = string.Empty;
+    private bool IsLoggedIn { get; set; } = false;
 
     private EmployeeList employeeList = null!;
 
@@ -34,4 +31,13 @@ else
     {
         await employeeList.EmployeeListUpdate(emp);
     }
+
+    private void LoggedIn(string status)
+    {
+        if (status.Equals("success"))
+        {
+            IsLoggedIn = true;
+        }
+    }
+
 }

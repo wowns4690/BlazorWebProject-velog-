@@ -30,6 +30,6 @@ namespace BlazorWebProject.Model
         [JsonPropertyName("pk")]
         public string pk { get; set; } = string.Empty;
         public string RegisterId { get; set; } = string.Empty;
-        public string Password {  get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }

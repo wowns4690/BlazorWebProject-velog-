@@ -12,19 +12,20 @@ namespace BlazorWebProject.Service
         }
 
         //로그인 요청을 하는 Method
-        public async Task<string> Login(EmployeeModel emp)
+        public async Task<string> Login(EmployeeLoginModel emp)
         {
-            string baseUrl = "api/auth/login";
+            const string baseUrl = "api/auth/login";
+
             var response = await _httpClient.PostAsJsonAsync(baseUrl, emp);
-            if (response.IsSuccessStatusCode)
-            {
-                var token = await response.Content.ReadAsStringAsync();
-                return token;
-            }
-            else
+
+            if (!response.IsSuccessStatusCode)
             {
                 return "";
-            }
+            }   
+
+            var token = await response.Content.ReadAsStringAsync();
+
+            return token;
         }
     }
 }

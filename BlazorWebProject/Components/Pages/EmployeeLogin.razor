@@ -2,54 +2,45 @@
 @using BlazorWebProject.Model
 @using BlazorWebProject.Service
 @inject AuthService service
-@inject TokenService tokenservice
 @inject IJSRuntime JsRuntime
 @inject NavigationManager nav
+
 <h3>EmployeeLogin</h3>
 <div class="form-group">
-    <input type="text" class="form-control form-control-user" @bind-value="emp.RegisterId" placeholder="아이디를 입력해주세요." maxlength="12">
+    <input type="text" class="form-control form-control-user" @bind-value="empLogin.Id" placeholder="아이디를 입력해주세요." maxlength="12">
 </div>
 <hr />
 <div class="form-group">
-    <input type="password" class="form-control form-control-user" @bind-value="emp.Password" placeholder="비밀번호를 입력해주세요." maxlength="12">
+    <input type="password" class="form-control form-control-user" @bind-value="empLogin.Password" placeholder="비밀번호를 입력해주세요." maxlength="12">
 </div>
 <hr />
 <button class="btn btn-primary" @onclick="@(async () => await LoginCheck())">로그인</button>
 
 @code {
-    private string token = string.Empty;
+    [Parameter]
+    public EventCallback<string> IsLoggedIn { get; set; }
 
-    private EmployeeModel emp = new EmployeeModel();
+    private EmployeeModel emp = new();
+    private EmployeeLoginModel empLogin = new();
 
     private async Task LoginCheck()
     {
-        if(string.IsNullOrEmpty(emp.RegisterId))
+        if (string.IsNullOrEmpty(empLogin.Id) || string.IsNullOrEmpty(empLogin.Password))
         {
-            await JsRuntime.InvokeVoidAsync("alert", "아이디를 입력해주세요.");
+            var errorString = string.IsNullOrEmpty(empLogin.Id) ? "아이디를 입력해주세요." : "비밀번호를 입력해주세요.";
+
+            await JsRuntime.InvokeVoidAsync("alert", errorString);
+
+            return;
         }
-        else if(string.IsNullOrEmpty(emp.Password))
-        {
-            await JsRuntime.InvokeVoidAsync("alert", "비밀번호를 입력해주세요.");
-        }
-        else
-        {
-            await Login();
-        }
+
+        Login();
     }
 
-    private async Task Login()
+    private async void Login()
     {
-        string token = await service.Login(emp);
-        if (string.IsNullOrEmpty(token))
-        {
-            await JsRuntime.InvokeVoidAsync("alert", "등록되지 않은 아이디와 비밀번호입니다.");
-            nav.NavigateTo("/EmployeeLogin");
-        }
-        else
-        {
-            tokenservice.Token = token;
-            nav.NavigateTo("/", true);
-        }
+        var loginstatus = await service.Login(empLogin);
+        await IsLoggedIn.InvokeAsync(loginstatus);
     }
 
 }
