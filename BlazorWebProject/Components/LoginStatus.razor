@@ -1,0 +1,38 @@
+﻿@using BlazorWebProject.Service
+@using System.Security.Claims
+@inject IHttpContextAccessor HttpContextAccessor
+@inject AuthService service
+@inject IJSRuntime JsRuntime
+@inject NavigationManager nav
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <form class="d-flex">
+            <button class="btn btn-outline-success" @onclick="Logout">@Name Logout</button>
+        </form>
+    </div>
+</nav>
+
+
+
+<script src="/JavaScript.js"></script>
+@code {
+    private string Name { get; set; } = string.Empty;
+    public async Task Logout()
+    {
+        await service.Logout();
+        await JsRuntime.InvokeVoidAsync("deleteCookie", "auth");
+        nav.NavigateTo(nav.Uri, forceLoad: true);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        var user = HttpContextAccessor.HttpContext?.User as ClaimsPrincipal;
+        if (user != null && user.Identity != null && !string.IsNullOrEmpty(user.Identity.Name))
+        {
+            Name = user.Identity.Name;
+        }
+        return Task.CompletedTask;
+    }
+
+
+}

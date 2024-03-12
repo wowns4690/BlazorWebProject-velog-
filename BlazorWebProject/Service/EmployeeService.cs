@@ -1,4 +1,5 @@
 ﻿using BlazorWebProject.Model;
+using BlazorWebProject.InterFace;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Azure.Cosmos;
@@ -7,7 +8,7 @@ using System.Net;
 
 namespace BlazorWebProject.Service
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeService
     {
         private CosmosService cosmosService;
 

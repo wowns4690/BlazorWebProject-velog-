@@ -5,6 +5,7 @@ using BlazorWebProject.Controller;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
+using Blazored.Modal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 });
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddBlazoredModal();
 builder.Services.AddScoped<EmployeeModel>();
 builder.Services.AddScoped<DepartmentModel>();
 builder.Services.AddScoped<EmployeeLoginModel>();

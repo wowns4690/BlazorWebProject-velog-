@@ -6,9 +6,9 @@ using System.Net;
 
 namespace BlazorWebProject.Controller
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
     public class EmployeeController : ControllerBase
     {
         private EmployeeService employeeService;

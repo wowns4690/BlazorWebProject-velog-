@@ -61,7 +61,7 @@ namespace BlazorWebProject.Controller
 
 
         [HttpPost("logout")]
-        public async void SignOut()
+        public new async void SignOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }

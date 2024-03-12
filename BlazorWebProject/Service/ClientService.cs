@@ -4,24 +4,32 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.Xml.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace BlazorWebProject.Service
 {
     public class ClientService
     {
         private HttpClient httpClient;
+        private HttpContext? httpContext;
 
-        public ClientService(HttpClient httpClient)
+        public ClientService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             this.httpClient = httpClient;
+            this.httpContext = httpContextAccessor.HttpContext;
         }
 
         //직원 목록 Method
         public async Task<List<EmployeeModel>> GetEmployeeList()
         {
-            string baseUrl = "api/Employee/employeeList";
-            //var response = await httpClient.GetFromJsonAsync<List<EmployeeModel>>(baseUrl);
+            const string baseUrl = "api/Employee/employeeList";
+
+            var cookie = httpContext?.Request.Cookies["auth"];
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"auth={cookie}");
+
             var response = await httpClient.GetStringAsync(baseUrl);
+
             if (string.IsNullOrEmpty(response))
             {
                 return new();
@@ -36,7 +44,9 @@ namespace BlazorWebProject.Service
         //부서 목록 Method
         public async Task<List<DepartmentModel>> GetDepartmentList()
         {
-            string baseUrl = "api/Employee/departmentList";
+            const string baseUrl = "api/Employee/departmentList";
+            var cookie = httpContext?.Request.Cookies["auth"];
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"auth={cookie}");
             var response = await httpClient.GetFromJsonAsync<List<DepartmentModel>>(baseUrl);
             return response ?? new();
         }
@@ -44,21 +54,27 @@ namespace BlazorWebProject.Service
         //직원을 추가하는 method
         public async Task EmployeeAdd(EmployeeModel emp)
         {
-            string baseUrl = "api/Employee/employeeAdd";
+            const string baseUrl = "api/Employee/employeeAdd";
+            var cookie = httpContext?.Request.Cookies["auth"];
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"auth={cookie}");
             await httpClient.PostAsJsonAsync(baseUrl, emp);
         }
 
         //직원 삭제 Method
         public async Task EmployeeDelete(EmployeeModel emp)
         {
-            string baseUrl = "api/Employee/employeeDelete";
+            const string baseUrl = "api/Employee/employeeDelete";
+            var cookie = httpContext?.Request.Cookies["auth"];
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"auth={cookie}");
             await httpClient.PostAsJsonAsync(baseUrl, emp);
         }
 
         //특정 직원을 조회하는 Method
         public async Task<EmployeeModel> GetEmployeeById(EmployeeModel emp)
         {
-            string baseUrl = "api/Employee/employeeById";
+            const string baseUrl = "api/Employee/employeeById";
+            var cookie = httpContext?.Request.Cookies["auth"];
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"auth={cookie}");
             var response = await httpClient.PostAsJsonAsync<EmployeeModel>(baseUrl, emp);
             var responseContent = await response.Content.ReadAsStringAsync();
             var employee = JsonSerializer.Deserialize<EmployeeModel>(responseContent);
@@ -68,7 +84,9 @@ namespace BlazorWebProject.Service
         //직원 정보를 수정하는 Method
         public async Task EmployeeUpdate(EmployeeModel emp)
         {
-            string baseUrl = "api/Employee/employeeUpdate";
+            var cookie = httpContext?.Request.Cookies["auth"];
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"auth={cookie}");
+            const string baseUrl = "api/Employee/employeeUpdate";
             await httpClient.PostAsJsonAsync(baseUrl, emp);
         }
 

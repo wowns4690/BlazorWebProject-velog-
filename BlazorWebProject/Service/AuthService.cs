@@ -1,5 +1,7 @@
 ﻿using BlazorWebProject.Model;
+using Microsoft.IdentityModel.Logging;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace BlazorWebProject.Service
 {
@@ -21,11 +23,20 @@ namespace BlazorWebProject.Service
             if (!response.IsSuccessStatusCode)
             {
                 return "";
-            }   
+            }
 
-            var token = await response.Content.ReadAsStringAsync();
-
-            return token;
+            string cookies = response.Headers.GetValues("Set-Cookie").First();
+            string pattern = @"auth=([^;]+)";
+            Match match = Regex.Match(cookies, pattern);
+            return match.Groups[1].Value;
         }
+
+        //로그아웃 Method
+        public async Task Logout()
+        {
+            const string baseUrl = "api/auth/logout";
+            await _httpClient.PostAsync(baseUrl, null);
+        }
+
     }
 }
