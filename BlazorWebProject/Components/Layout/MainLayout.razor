@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using BlazorWebProject.Components.Pages
+@inherits LayoutComponentBase
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -10,7 +12,16 @@
         </div>
 
         <article class="content px-4">
-            @Body
+            <CascadingAuthenticationState>
+                <AuthorizeView>
+                    <Authorized>
+                        <EmployeeList></EmployeeList>
+                    </Authorized>
+                    <NotAuthorized>
+                        <EmployeeLogin></EmployeeLogin>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </CascadingAuthenticationState>
         </article>
     </main>
 </div>

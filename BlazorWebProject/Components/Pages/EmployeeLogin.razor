@@ -1,6 +1,6 @@
-﻿@page "/EmployeeLogin"
-@using BlazorWebProject.Model
+﻿@using BlazorWebProject.Model
 @using BlazorWebProject.Service
+@using Microsoft.AspNetCore.Identity
 @inject AuthService service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager nav
@@ -17,8 +17,6 @@
 <button class="btn btn-primary" @onclick="@(async () => await LoginCheck())">로그인</button>
 
 @code {
-    [Parameter]
-    public EventCallback<string> IsLoggedIn { get; set; }
 
     private EmployeeModel emp = new();
     private EmployeeLoginModel empLogin = new();
@@ -39,8 +37,7 @@
 
     private async void Login()
     {
-        var loginstatus = await service.Login(empLogin);
-        await IsLoggedIn.InvokeAsync(loginstatus);
+        await service.Login(empLogin);
     }
 
 }

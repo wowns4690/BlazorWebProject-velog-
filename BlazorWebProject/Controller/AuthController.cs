@@ -1,16 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using BlazorWebProject.Model;
 using BlazorWebProject.Service;
-using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components;
+using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebProject.Controller
 {
@@ -20,12 +16,16 @@ namespace BlazorWebProject.Controller
     {
         private readonly IConfiguration _configuration;
         private readonly EmployeeService _employeeService;
+        private readonly NavigationManager _navigationManager;
 
 
-        public AuthController(IConfiguration configuration, EmployeeService employeeService)
+
+        public AuthController(IConfiguration configuration, EmployeeService employeeService, NavigationManager navigationManager)
         {
             _configuration = configuration;
             _employeeService = employeeService;
+            _navigationManager = navigationManager;
+            
         }
 
         //로그인 Method
@@ -33,6 +33,7 @@ namespace BlazorWebProject.Controller
         public async Task<ActionResult<string>> SignInAsync([FromBody] EmployeeLoginModel emp)
         {
             var cosmosEmployee = await _employeeService.Login(emp);
+            
 
             if (cosmosEmployee is null)
             {
@@ -50,15 +51,13 @@ namespace BlazorWebProject.Controller
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), new AuthenticationProperties
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(principal), new AuthenticationProperties
             {
-                IsPersistent = false,
-                
+                IsPersistent = false, 
             });
 
             return Ok("success");
         }
-
 
 
         [HttpPost("logout")]

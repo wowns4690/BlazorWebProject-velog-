@@ -1,5 +1,6 @@
 ﻿using BlazorWebProject.Model;
 using BlazorWebProject.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -7,6 +8,7 @@ namespace BlazorWebProject.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class EmployeeController : ControllerBase
     {
         private EmployeeService employeeService;

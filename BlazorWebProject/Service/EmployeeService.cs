@@ -1,12 +1,4 @@
-﻿
-
-
-
-
-
-
-
-using BlazorWebProject.Model;
+﻿using BlazorWebProject.Model;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Azure.Cosmos;

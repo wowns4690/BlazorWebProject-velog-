@@ -4,6 +4,7 @@ using BlazorWebProject.Model;
 using BlazorWebProject.Controller;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 {
     options.Cookie.Name = "auth";
     options.LoginPath= "/";
-    options.AccessDeniedPath = "/";
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     options.Events.OnRedirectToAccessDenied = context =>
     {
         context.Response.StatusCode = 403;

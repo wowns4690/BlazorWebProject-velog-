@@ -7,7 +7,6 @@
 @inject IJSRuntime JsRuntime
 <PageTitle>Home</PageTitle>
 
-@if(IsLoggedIn){
     <div class="mt-4">
         <EmployeeAdd OnEmployeeAdded="HandleEmployeeAdded" />
     </div>
@@ -15,12 +14,10 @@
     <div class="mt-4">
         <EmployeeList @ref="employeeList" />
     </div>
-}
-else{
+
     <div class="mt-4">
-    <EmployeeLogin IsLoggedIn="LoggedIn" />
+    <EmployeeLogin />
     </div>
-}
 
 @code {
     private bool IsLoggedIn { get; set; } = false;
@@ -32,12 +29,5 @@ else{
         await employeeList.EmployeeListUpdate(emp);
     }
 
-    private void LoggedIn(string status)
-    {
-        if (status.Equals("success"))
-        {
-            IsLoggedIn = true;
-        }
-    }
 
 }
